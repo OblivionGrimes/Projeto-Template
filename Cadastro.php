@@ -8,7 +8,8 @@
 
 <?php
     if(isset($_POST['BT_SALVAR'])){
-        echo $_POST['L_TIPO_USER']."testeee";
+        echo $_POST['L_TIPO_USER'];
+        echo $_POST['L_NOME'];
     }
 ?>
 
