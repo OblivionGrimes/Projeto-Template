@@ -22,9 +22,9 @@
             <Label>Senha:</label>
             <Input name='L_SENHA' id='L_SENHA' type='password'></Input><br>
             <p>Este cadastro é para comerciante?</p>
-            <input type="radio" id='1' name="L_TIPO_USER" value="1">
+            <input type="radio" id='L_TIPO_USER' name="L_TIPO_USER" value="1">
             <label for="L_TIPO_USER">Sim</label><br>
-            <input type="radio" id='2' name="L_TIPO_USER" value="2">
+            <input type="radio" id='L_TIPO_USER' name="L_TIPO_USER" value="2">
             <label for="L_TIPO_USER">Não</label><br>
             <Input name='BT_SALVAR' type='submit' value='Acessar'></Input>
         </Form>
