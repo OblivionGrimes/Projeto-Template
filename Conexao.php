@@ -4,7 +4,6 @@
     $HOST_NAME = 'root';
     //$BD = 'projeto_tmp';
 
-    session_start();
     $mysqli = new mysqli($SERVER_NAME, $HOST_NAME, $SENHA);
 
     if($mysqli->connect_error){
