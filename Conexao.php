@@ -6,11 +6,13 @@
 
     $mysqli = new mysqli($SERVER_NAME, $HOST_NAME, $SENHA);
 
+    date_default_timezone_set('America/Bahia');
+
     if($mysqli->connect_error){
         echo "conexão falhou";
-    }else{
+    }/*else{
         echo "tudo certo";
-    }
+    }*/
 
-    mysqli_close($mysqli);
+    //mysqli_close($mysqli);
 ?>
