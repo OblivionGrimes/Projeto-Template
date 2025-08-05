@@ -11,12 +11,35 @@
     <?php
         include "Conexao.php";
 
-        if(isset($_GET['success'])){
-            echo "Cadastro realizado com sucesso!!";
+        if(isset($_GET['success']) or isset($_GET['error'])){
+            if(isset($_GET['success'])){
+                echo "Cadastro realizado com sucesso!!";
+            }
+            if(isset($_GET['error'])){
+                echo "Email ou senha estão incorretos!!";
+            }
         }
 
         if(isset($_REQUEST['BT_SALVAR'])){
+            $L_EMAIL = $_POST['L_EMAIL'];
+            $L_SENHA = $_POST['L_SENHA'];
 
+            $array_verifica =
+                $mysqli->query("select 
+                                    1 
+                                from 
+                                    projeto_tmp.sys_user 
+                                where 
+                                    L_EMAIL = '".$L_EMAIL."' and 
+                                    L_SENHA = '".$L_SENHA."' 
+                                limit 1");
+            $result = $array_verifica->fetch_all();
+
+            if($result[0][0] == 1){
+                header("location: Index.php");
+            }else{
+                header("location: Login.php?error=1");
+            }
         }
     ?>
 
@@ -30,4 +53,7 @@
         </Form>
     </div>
 </body>
+<?php
+    mysqli_close($mysqli);
+?>
 </html>
