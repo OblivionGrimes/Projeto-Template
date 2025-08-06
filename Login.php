@@ -26,7 +26,7 @@
 
             $array_verifica =
                 $mysqli->query("select 
-                                    1 
+                                    L_ID 
                                 from 
                                     projeto_tmp.sys_user 
                                 where 
@@ -35,11 +35,10 @@
                                 limit 1");
             $result = $array_verifica->fetch_all();
 
-            if($result[0][0] == 1){
-                header("location: Index.php");
-            }else{
-                header("location: Login.php?error=1");
-            }
+            $valor = urlencode("success&&".$result[0][0]."");
+
+            header("location: Conexao.php?link=".$valor." ");
+            
         }
     ?>
 
@@ -51,6 +50,10 @@
             <Input name='L_SENHA' id='L_SENHA' type='password'></Input><br>
             <Input name='BT_SALVAR' type='submit' value='Acessar'></Input>
         </Form>
+
+        <div class="div_link"> <!-- Parado por enquanto -->
+            <a href="">Esqueceu a senha?</a>
+        </div>
     </div>
 </body>
 <?php
