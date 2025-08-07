@@ -7,14 +7,14 @@
     $mysqli = new mysqli($SERVER_NAME, $HOST_NAME, $SENHA);
 
     date_default_timezone_set('America/Bahia');
+    session_start();
 
     if($mysqli->connect_error){
         echo "conexão falhou";
     }
 
-    session_start();
+    if(isset($_GET['link'])){ 
 
-    if(isset($_GET['link'])){
         $LINK = explode('&&',$_GET['link']);
 
         if($LINK[0] == 'success'){
@@ -36,13 +36,22 @@
 
                 header("location: index.php");
                 exit;
-            }elseif(empty($QuerryPrincipal['L_ID']) ){
+            }elseif(empty($QuerryPrincipal['L_ID'])){
                 session_unset();
                 session_destroy();
 
                 header("location: Login.php?error=1");
                 exit;
             }
+        }
+
+        // Para deslogar
+        if($LINK[0] == 'out'){
+            session_unset();
+            session_destroy();
+
+            header("location: Login.php");
+            exit;
         }
     }
 

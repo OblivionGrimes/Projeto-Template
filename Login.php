@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="./CadLog/Cadastro.css">
+    <link rel="stylesheet" href="./CSS/Cadastro.css">
 </head>
 <body style='background-color: hsla(50, 33%, 25%, 0.75);'> <!-- temporario esse style -->
 

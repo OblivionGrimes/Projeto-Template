@@ -1,0 +1,60 @@
+/*.body_css{
+    margin: auto;
+    background-color: hsla(50, 33%, 25%, 0.75);
+    padding: 10px;
+}
+
+.div_user{
+    text-align: center;
+    position: absolute;
+    right: 0px;
+    width: 6%; 
+    border: solid 2px black;
+}*/
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 7px;
+    text-align: right;
+}
+
+nav {
+    background-color: #444;
+    padding: 10px;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+}
+
+main {
+    padding: 20px;
+    background-color: white;
+    max-width: 800px;
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
+
+
