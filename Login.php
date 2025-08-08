@@ -54,6 +54,9 @@
         <div class="div_link"> <!-- Parado por enquanto -->
             <a href="">Esqueceu a senha?</a>
         </div>
+        <div class="div_link"> 
+            <a href="Cadastro.php">Não tem conta?</a>
+        </div>
     </div>
 </body>
 <?php

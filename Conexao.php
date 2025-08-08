@@ -55,4 +55,20 @@
         }
     }
 
+    // Para deslogar automaticamente.
+    $tempo_limite = 800;
+    // Se existir a última atividade
+    if (isset($_SESSION['ULTIMA_ATIVIDADE'])) {
+        if (time() - $_SESSION['ULTIMA_ATIVIDADE'] > $tempo_limite) {
+            // Expirou: limpa e destrói a sessão
+            session_unset();
+            session_destroy();
+            header("Location: login.php"); 
+            exit;
+        }
+    }
+
+    // Atualiza o tempo da última atividade
+    $_SESSION['ULTIMA_ATIVIDADE'] = time();
+
 ?>

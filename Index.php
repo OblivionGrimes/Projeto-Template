@@ -29,8 +29,31 @@
     </nav>
 
     <main>
-        <h2>Página Inicial</h2>
-        <p>Este é um exemplo de template com HTML e CSS puro.</p>
+
+        <div class="card-grid">
+            <?php
+                $array =
+                    $mysqli->query("select 
+                                        *
+                                    from
+                                        `trabalho kylansky`.produtos
+                                    order by
+                                        nome_produtos"); 
+                while($row = $array->fetch_assoc()){
+            ?>
+
+            <div class="card">
+                <img src="imagens/jogo1.jpg" alt="Imagem do Produto">
+                <h3><?php echo $row['nome_produtos'] ?></h3>
+                <p><?php echo $row['valor_produtos'] ?></p>
+                <a href="#"><button>Comprar</button></a>
+            </div>
+
+            <?php
+                } // do while
+            ?>
+        </div>
+
     </main>
 
     <footer>
