@@ -13,7 +13,7 @@
     if(!empty($_SESSION['S_L_ID'])){     
 
         // Para deslogar
-        $valor = urlencode("out&&sair");
+        $logout = urlencode("out&&sair");
 ?>
 
 <body>
@@ -23,9 +23,9 @@
 
     <nav>
         <a href="index.php">Início</a>
-        <a href="">Cadastrar produtos</a>
+        <a href="CadProdutos.php">Cadastrar produtos</a>
         <a href="">Meus Produtos</a>
-        <a href="Conexao.php?link=<?php echo $valor ?>" >Sair</a>
+        <a href="Conexao.php?link=<?php echo $logout ?>" >Sair</a>
     </nav>
 
     <main>
@@ -36,16 +36,17 @@
                     $mysqli->query("select 
                                         *
                                     from
-                                        `trabalho kylansky`.produtos
+                                        `projeto_tmp`.produtos
                                     order by
-                                        nome_produtos"); 
+                                        P_NOME"); 
                 while($row = $array->fetch_assoc()){
             ?>
 
             <div class="card">
                 <img src="imagens/jogo1.jpg" alt="Imagem do Produto">
-                <h3><?php echo $row['nome_produtos'] ?></h3>
-                <p><?php echo $row['valor_produtos'] ?></p>
+                <h3><?php echo $row['P_NOME'] ?></h3>
+                <p><?php echo $row['P_DESCRICAO'] ?></p>
+                <h4><?php echo $row['P_VALOR'] ?></h4>
                 <a href="#"><button>Comprar</button></a>
             </div>
 
