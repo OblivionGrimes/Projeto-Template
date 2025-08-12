@@ -30,37 +30,12 @@
             header("location: CadProdutos.php");
         }
 
+        // Salvar imagens do jogo
+        if(isset($_POST['BT_ARQUIVO'])){
+            $P_ID = base64_decode($_POST['P_ID']);
 
-
-
-    /*
-        <! --
-<!-- Botão para acionar modal -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ExemploModalCentralizado">
-  Abrir modal de demonstração
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="ExemploModalCentralizado" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="TituloModalCentralizado">Título do modal</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-        <button type="button" class="btn btn-primary">Salvar mudanças</button>
-      </div>
-    </div>
-  </div>
-</div> -->
-    */ 
+            print_r($_FILES['PI_ARQUIVOS']);
+        }
 ?>
 
 <body>
@@ -138,7 +113,18 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <!-- Adicionar formulario para adicionar fotos -->
+                                <div class="form-card">
+                                    <form method="POST" enctype="multipart/form-data">
+                                        <Input type="hidden" name="P_ID" id="P_ID" value="<?php echo base64_encode($row['P_ID']); ?>">
+
+                                        <label>Imagem ou video</label>
+                                        <Input type="file" name="PI_ARQUIVOS" id="PI_ARQUIVOS" multiple ><br>
+
+                                        <div class="form-actions">
+                                            <Input type="submit" name="BT_ARQUIVO" value="Salvar arquivo">
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
