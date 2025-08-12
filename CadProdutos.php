@@ -33,8 +33,40 @@
         // Salvar imagens do jogo
         if(isset($_POST['BT_ARQUIVO'])){
             $P_ID = base64_decode($_POST['P_ID']);
+            $PI_DATE = date("Y-m-d H:i:s");
 
-            print_r($_FILES['PI_ARQUIVOS']);
+            $caminho = __DIR__."/Docs/"; // Caminho absoluto para evitar problemas
+
+            // Nome original do arquivo
+            $nomeArquivo = basename($_FILES['PI_ARQUIVOS']['name']);
+
+            // Evita caracteres perigosos no nome
+            $nomeArquivo = preg_replace('/[^A-Za-z0-9_\.-]/', '_', $nomeArquivo);
+
+            // Define caminho final
+            $uploadfile = $caminho . $nomeArquivo;
+
+            // Verifica se o arquivo é válido
+            $extensoesPermitidas = ['jpg', 'jpeg', 'png'];
+            $extensao = strtolower(pathinfo($nomeArquivo, PATHINFO_EXTENSION));
+
+            if (!in_array($extensao, $extensoesPermitidas)) {
+                echo "Tipo de arquivo não permitido!";
+                exit;
+            }
+
+            // Move o arquivo para a pasta
+            if (move_uploaded_file($_FILES['PI_ARQUIVOS']['tmp_name'], $uploadfile)) {
+
+                $stmt = $mysqli->prepare("insert into projeto_tmp.produtositens (P_ID, PI_ARQUIVOS, L_ID, PI_DATE) values (?, ?, ?, ?)");
+                $stmt->bind_param("isis", $P_ID, $uploadfile, $_SESSION['S_L_ID'], $PI_DATE);
+                $stmt->execute();
+
+                echo "Arquivo enviado com sucesso!";
+            } else {
+                echo "Erro ao enviar o arquivo.";
+            }
+
         }
 ?>
 
@@ -118,7 +150,7 @@
                                         <Input type="hidden" name="P_ID" id="P_ID" value="<?php echo base64_encode($row['P_ID']); ?>">
 
                                         <label>Imagem ou video</label>
-                                        <Input type="file" name="PI_ARQUIVOS" id="PI_ARQUIVOS" multiple ><br>
+                                        <Input type="file" name="PI_ARQUIVOS" id="PI_ARQUIVOS" multiple accept="image/jpg, image/jpeg, image/png"><br>
 
                                         <div class="form-actions">
                                             <Input type="submit" name="BT_ARQUIVO" value="Salvar arquivo">
