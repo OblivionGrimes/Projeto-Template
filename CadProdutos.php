@@ -13,19 +13,48 @@
     include "Conexao.php";
 
     if(!empty($_SESSION['S_L_ID'])){     
+        
+        $P_NOME = '';
+        $P_DESCRICAO = '';
+        $P_VALOR = '';
+        $P_ID = '';
 
-        // Para deslogar
-        $valor = urlencode("out&&sair");
+        if(isset($_GET['link'])){
+            $LINK = explode('&&',$_GET['link']);
 
+            if($LINK[0] == 'Edit'){
+                $P_ID = $LINK[1];
+
+                $edit = 
+                    $mysqli->query("select * from projeto_tmp.produtos where P_ID = '".$P_ID."' limit 1");
+                $edit = $edit->fetch_assoc();
+
+                $P_NOME = $edit['P_NOME'];
+                $P_DESCRICAO = $edit['P_DESCRICAO'];
+                $P_VALOR = $edit['P_VALOR'];
+                $P_ID = $edit['P_ID'];
+            }
+        }
 
         if(isset($_POST['BT_SALVAR'])){
+            $P_ID = base64_decode($_POST['P_ID']);
             $P_NOME = $_POST['P_NOME'];
             $P_DESCRICAO = $_POST['P_DESCRICAO'];
             $P_VALOR = $_POST['P_VALOR'];
 
-            $stmt = $mysqli->prepare("insert into projeto_tmp.produtos (P_NOME, P_DESCRICAO, P_VALOR, L_ID) values (?, ?, ?, ?)");
-            $stmt->bind_param("ssdi", $P_NOME, $P_DESCRICAO, $P_VALOR, $_SESSION['S_L_ID']);
-            $stmt->execute();
+            if(empty($P_ID)){
+
+                $stmt = $mysqli->prepare("insert into projeto_tmp.produtos (P_NOME, P_DESCRICAO, P_VALOR, L_ID) values (?, ?, ?, ?)");
+                $stmt->bind_param("ssdi", $P_NOME, $P_DESCRICAO, $P_VALOR, $_SESSION['S_L_ID']);
+                $stmt->execute();
+
+            }elseif(!empty($P_ID)){
+
+                $stmt = $mysqli->prepare("update projeto_tmp.produtos set P_NOME = ?, P_DESCRICAO = ?, P_VALOR = ? where P_ID = ? ");
+                $stmt->bind_param("ssdi", $P_NOME, $P_DESCRICAO, $P_VALOR, $P_ID);
+                $stmt->execute();
+
+            }
 
             header("location: CadProdutos.php");
         }
@@ -38,34 +67,29 @@
             $caminho = __DIR__."/Docs/"; // Caminho absoluto para evitar problemas
 
             // Nome original do arquivo
-            $nomeArquivo = basename($_FILES['PI_ARQUIVOS']['name']);
+            $nomeArquivo_TMP = $_FILES['PI_ARQUIVOS']['tmp_name'];
+
+            // Nome original do arquivo
+            $nomeArquivo = $_FILES['PI_ARQUIVOS']['name'];
 
             // Evita caracteres perigosos no nome
             $nomeArquivo = preg_replace('/[^A-Za-z0-9_\.-]/', '_', $nomeArquivo);
 
-            // Define caminho final
-            $uploadfile = $caminho . $nomeArquivo;
+            $file_array = array_combine($nomeArquivo_TMP, $nomeArquivo);
 
-            // Verifica se o arquivo é válido
-            $extensoesPermitidas = ['jpg', 'jpeg', 'png'];
-            $extensao = strtolower(pathinfo($nomeArquivo, PATHINFO_EXTENSION));
+            foreach($file_array as $tmp_folder => $image_name){
 
-            if (!in_array($extensao, $extensoesPermitidas)) {
-                echo "Tipo de arquivo não permitido!";
-                exit;
+                // Move o arquivo para a pasta
+                if (move_uploaded_file($tmp_folder, $caminho.$image_name)) {
+
+                    $stmt = $mysqli->prepare("insert into projeto_tmp.produtositens (P_ID, PI_ARQUIVOS, L_ID, PI_DATE) values (?, ?, ?, ?)");
+                    $stmt->bind_param("isis", $P_ID, $image_name, $_SESSION['S_L_ID'], $PI_DATE);
+                    $stmt->execute();
+
+                } 
             }
 
-            // Move o arquivo para a pasta
-            if (move_uploaded_file($_FILES['PI_ARQUIVOS']['tmp_name'], $uploadfile)) {
-
-                $stmt = $mysqli->prepare("insert into projeto_tmp.produtositens (P_ID, PI_ARQUIVOS, L_ID, PI_DATE) values (?, ?, ?, ?)");
-                $stmt->bind_param("isis", $P_ID, $uploadfile, $_SESSION['S_L_ID'], $PI_DATE);
-                $stmt->execute();
-
-                echo "Arquivo enviado com sucesso!";
-            } else {
-                echo "Erro ao enviar o arquivo.";
-            }
+            echo "Arquivo enviado com sucesso!";
 
         }
 ?>
@@ -79,20 +103,22 @@
         <a href="index.php">Início</a>
         <a href="">Cadastrar produtos</a>
         <a href="">Meus Produtos</a>
-        <a href="Conexao.php?link=<?php echo $valor ?>" >Sair</a>
+        <a href="Conexao.php?link=<?php echo urlencode("out&&sair") ?>" >Sair</a>
     </nav>
 
     <main>
         <div class="form-card">
             <form method="POST">
                 <label>Nome:</label>
-                <input type="text" required name="P_NOME" id="P_NOME" value="">
+                <input type="text" required name="P_NOME" id="P_NOME" value="<?php echo $P_NOME; ?>">
 
                 <label>Descrição:</label>
-                <input type="text" name="P_DESCRICAO" id="P_DESCRICAO" value="">
+                <input type="text" name="P_DESCRICAO" id="P_DESCRICAO" value="<?php echo $P_DESCRICAO; ?>">
 
                 <label>Valor:</label>
-                <input type="number" required step="0.01" name="P_VALOR" id="P_VALOR" value="">
+                <input type="number" required step="0.01" name="P_VALOR" id="P_VALOR" value="<?php echo $P_VALOR; ?>">
+
+                <input type="hidden" name="P_ID" id="P_ID" value="<?php echo base64_encode($P_ID); ?>">
 
                 <div class="form-actions">
                     <input type="submit" name="BT_SALVAR" value="Salvar">
@@ -136,34 +162,37 @@
 
                         <!-- Modal -->
                         <div class="modal fade" id="<?php echo "MOD".$row['P_ID']; ?>" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="TituloModalCentralizado"><?php echo $row['P_NOME']; ?></h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-                                <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-card">
-                                    <form method="POST" enctype="multipart/form-data">
-                                        <Input type="hidden" name="P_ID" id="P_ID" value="<?php echo base64_encode($row['P_ID']); ?>">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="TituloModalCentralizado"><?php echo $row['P_NOME']; ?></h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                                    <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-card">
+                                        <form method="POST" enctype="multipart/form-data">
+                                            <Input type="hidden" name="P_ID" id="P_ID" value="<?php echo base64_encode($row['P_ID']); ?>">
 
-                                        <label>Imagem ou video</label>
-                                        <Input type="file" name="PI_ARQUIVOS" id="PI_ARQUIVOS" multiple accept="image/jpg, image/jpeg, image/png"><br>
+                                            <label>Imagens e videos</label>
+                                            <Input type="file" name="PI_ARQUIVOS[]" id="PI_ARQUIVOS[]" multiple accept="image/jpg, image/jpeg, image/png" required><br>
 
-                                        <div class="form-actions">
-                                            <Input type="submit" name="BT_ARQUIVO" value="Salvar arquivo">
-                                        </div>
-                                    </form>
+                                            <div class="form-actions">
+                                                <Input type="submit" name="BT_ARQUIVO" value="Salvar arquivo">
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                </div>
                                 </div>
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
-                            </div>
-                            </div>
                         </div>
-                        </div>
+
+                        <!-- Botão de editar -->
+                        <a class="btn btn-secondary" href="CadProdutos.php?link=<?php echo urlencode("Edit&&".$row['P_ID']) ?>">Editar</a>
                     </td>
 
                 </tr>

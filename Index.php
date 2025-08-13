@@ -34,19 +34,20 @@
             <?php
                 $array =
                     $mysqli->query("select 
-                                        *
+                                        P.*,
+                                        (select PI_ARQUIVOS from `projeto_tmp`.produtositens as PI where P.P_ID = PI.P_ID limit 1) as PI_ARQUIVOS
                                     from
-                                        `projeto_tmp`.produtos
+                                        `projeto_tmp`.produtos as P
                                     order by
                                         P_NOME"); 
                 while($row = $array->fetch_assoc()){
             ?>
 
             <div class="card">
-                <img src="imagens/jogo1.jpg" alt="Imagem do Produto">
+                <img src="Docs/<?php echo $row['PI_ARQUIVOS']?>" alt="Imagem do Produto">
                 <h3><?php echo $row['P_NOME'] ?></h3>
                 <p><?php echo $row['P_DESCRICAO'] ?></p>
-                <h4><?php echo $row['P_VALOR'] ?></h4>
+                <h4><?php echo number_format($row['P_VALOR'],2,',','.') ?></h4>
                 <a href="#"><button>Comprar</button></a>
             </div>
 
