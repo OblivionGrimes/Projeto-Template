@@ -6,7 +6,11 @@
     <title>Cadastro Produtos</title>
     <link rel="stylesheet" href="./CSS/Index.css">
     <link rel="stylesheet" href="./CSS/CadProdutos.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!-- CSS do Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- JS do Bootstrap 5.3 (precisa do Popper incluso) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
 
 <?php
@@ -33,6 +37,15 @@
                 $P_DESCRICAO = $edit['P_DESCRICAO'];
                 $P_VALOR = $edit['P_VALOR'];
                 $P_ID = $edit['P_ID'];
+            }
+
+            if($LINK[0] == 'Exc'){
+                $PI_ID = $LINK[1];
+
+                $stmt = $mysqli->prepare("delete from projeto_tmp.produtositens where PI_ID = ? ");
+                $stmt->bind_param("i", $PI_ID);
+                $stmt->execute();
+
             }
         }
 
@@ -156,17 +169,17 @@
                     <td><?php echo $row['P_DESCRICAO']; ?></td>
                     <td><?php echo number_format($row['P_VALOR'], 2, ',', '.'); ?></td>
                     <td> <!-- Botão para acionar modal -->
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="<?php echo "#MOD".$row['P_ID']; ?>">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="<?php echo "#MOD".$row['P_ID']; ?>">
                         Modal
                         </button>
 
                         <!-- Modal -->
                         <div class="modal fade" id="<?php echo "MOD".$row['P_ID']; ?>" tabindex="-1" role="dialog" aria-labelledby="TituloModalCentralizado" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="TituloModalCentralizado"><?php echo $row['P_NOME']; ?></h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Fechar">
                                     <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
@@ -183,9 +196,34 @@
                                             </div>
                                         </form>
                                     </div>
+
+                                    <!-- Para visualizar todas as imagens inseridas -->
+                                    <div class="card-grid">
+                                    <?php
+                                        $array_img =
+                                            $mysqli->query("select
+                                                                *
+                                                            from
+                                                                projeto_tmp.produtositens
+                                                            where
+                                                                P_ID = '".$row['P_ID']."' ");
+                                        while($rowI = $array_img->fetch_assoc()){
+ 
+                                    ?>
+                                        
+                                        <div class="card">
+                                            <img src="Docs/<?php echo $rowI['PI_ARQUIVOS']?>" alt="Imagem do Produto">
+                                            <a href="CadProdutos.php?link=<?php echo urlencode("Exc&&".$rowI['PI_ID']) ?>"><button class="btn btn-danger">Excluir</button></a>
+                                        </div>
+                                        
+                                    <?php
+                                        }
+                                    ?>
+                                    </div>
+
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                                 </div>
                                 </div>
                             </div>
@@ -221,7 +259,5 @@
         exit;
     }
 ?>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
 </html>
